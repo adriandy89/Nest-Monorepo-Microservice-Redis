@@ -1,39 +1,30 @@
 import {
-  HttpException,
-  Inject,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+  ErrorHandlerService,
+  EventPatternTypes,
+  MessageDTO,
+  MessagePatternTypes,
+} from '@lib-shared/shared';
+import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Observable, catchError, of, timeout } from 'rxjs';
 
 @Injectable()
 export class AppService {
-  constructor(@Inject('MY_APP_SERVICE') private clientMyApp: ClientProxy) {}
+  constructor(
+    @Inject('MY_APP_SERVICE') private clientMyApp: ClientProxy,
+    private readonly errorHandlerService: ErrorHandlerService,
+  ) {}
 
-  getHello(): string {
-    return 'Hello World! - my project';
-  }
-
-  createUser() {
-    this.clientMyApp.emit('new_email', { email: 'testemail@klm.com' });
+  createUser(message: MessageDTO) {
+    this.clientMyApp.emit(EventPatternTypes.newEmail, message);
   }
 
   getMessageById(id: string): Observable<any> {
-    const pattern = { cmd: 'getMessageById' };
-    return this.clientMyApp.send(pattern, id).pipe(
-      timeout(3000),
+    return this.clientMyApp.send(MessagePatternTypes.getMessageById, id).pipe(
+      timeout(5000),
       catchError((err) => {
-        console.log(err);
-        return of(this.errorHandler(err));
+        return of(this.errorHandlerService.errorHandlerAPI(err));
       }),
     );
-  }
-
-  errorHandler(error: any) {
-    console.log(error);
-    if (error.code && error.message)
-      throw new HttpException(error.message, error.code);
-    throw new InternalServerErrorException('Internal Server Error');
   }
 }

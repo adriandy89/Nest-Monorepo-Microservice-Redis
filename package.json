@@ -24,6 +24,8 @@
     "@nestjs/core": "^9.0.0",
     "@nestjs/microservices": "^9.2.1",
     "@nestjs/platform-express": "^9.0.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.0",
     "ioredis": "^5.3.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0"
@@ -68,7 +70,11 @@
     "coverageDirectory": "./coverage",
     "testEnvironment": "node",
     "roots": [
-      "<rootDir>/apps/"
-    ]
+      "<rootDir>/apps/",
+      "<rootDir>/libs/"
+    ],
+    "moduleNameMapper": {
+      "^shared/shared(|/.*)$": "<rootDir>/libs/shared/src/$1"
+    }
   }
 }

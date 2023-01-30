@@ -1,13 +1,14 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { AppService } from './app.service';
+import { MessageDTO } from '@lib-shared/shared';
 
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get()
-  newUser() {
-    return this.appService.createUser();
+  @Post()
+  newUser(@Body() message: MessageDTO) {
+    return this.appService.createUser(message);
   }
 
   @Get(':id')
